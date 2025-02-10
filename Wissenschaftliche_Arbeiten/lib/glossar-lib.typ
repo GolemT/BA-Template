@@ -16,7 +16,8 @@
 #let print-glossary(title: "Glossar", glossary-spacing) = {
   heading(level: 1, outlined: false, numbering: none)[#title]
 
-  glossary-state.display(glossary => {
+  context {
+    let glossary = glossary-state.get()
     let glossary-keys = glossary.keys()
 
     let max-width = 0pt
@@ -37,5 +38,5 @@
         [*#element#label("glossary-" + element)*], [#glossary.at(element)],
       )
     }
-  })
+  }
 }

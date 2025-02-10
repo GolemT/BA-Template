@@ -23,9 +23,11 @@
 
 
 #let acrl(acr, plural: false, link: true) = {
-  acros.display(Acronyms => {
+  context {
+    let acronyms = acros.get()
+
     if is-in-dict("acronyms", acros, acr) {
-      let defs = Acronyms.at(acr)
+      let defs = acronyms.at(acr)
       if type(defs) == "string" {
         if plural {
           display("acronyms", acros, acr, defs + "s", link: link)
@@ -51,7 +53,7 @@
         panic("Definitions should be arrays of one or two strings. Definition of " + acr + " is: " + type(defs))
       }
     }
-  })
+  }
 }
 
 #let acrlpl(acr, link: true) = {
@@ -72,7 +74,9 @@
 }
 
 #let acr(acr, plural: false, link: true) = {
-  state(prefix + acr, false).display(seen => {
+  context {
+    let seen = state(prefix + acr, false).get()
+
     if seen {
       if plural {
         acrspl(acr, link: link)
@@ -86,7 +90,7 @@
         acrf(acr, link: link)
       }
     }
-  })
+  }
 }
 
 #let acrpl(acronym, link: true) = {
@@ -96,8 +100,9 @@
 #let print-acronyms(title: "acronyms", acronym-spacing) = {
   heading(level: 1, outlined: false, numbering: none)[#title]
 
-  acros.display(Acronyms => {
-    let acronym-keys = Acronyms.keys()
+  context {
+    let acronyms = acros.get()
+    let acronym-keys = acronyms.keys()
 
     let max-width = 0pt
     for acr in acronym-keys {
@@ -117,5 +122,5 @@
         [*#acr#label("acronyms-" + acr)*], [#acrl(acr, link: false)],
       )
     }
-  })
+  }
 }
