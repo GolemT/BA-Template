@@ -1,8 +1,7 @@
-#import "lib/glossar-lib.typ": *
-#import "lib/acronym-lib.typ": *
+#import "/lib/import.typ": *
 #import "glossar.typ": Glossar
 #import "acronyms.typ": Acronyms
-#import "lib/shared-lib.typ": comment, todo
+#import "lib/shared-lib.typ": *
 
 #let project(
   //Settings der Template
@@ -10,6 +9,8 @@
   authors: (
     (name: "Student", Matrikelnummer: "123456"),
   ),
+  keywords: (),
+  description: "",
   date: "01.01.2024",
   logo: image("images/BA_Logo.jpg", width: auto),
   modul: [Theorie-Praxis-Anwendung II],
@@ -20,6 +21,7 @@
   tabellenverzeichnis: true,
   codeverzeichnis: true,
   abkürzungsverzeichnis: true,
+  anhang: false,
   glossar: true,
   literaturverzeichnis: true,
   //Vorgeschriebene Texte
@@ -95,72 +97,111 @@
   align(center, text(1.1em, date))
   v(2.4fr)
 
-  if sperrvermerk == true {  
-    v(1fr)
-    align(center)[
-        #heading(
-          outlined: false,
-          numbering: none,
-          text(0.85em, smallcaps[Sperrvermerk]),
-        )
-        #sperrvermerkText
-      ]
+  if sperrvermerk == true {
+    pagebreak()
+    heading(
+      outlined: false,
+      numbering: none,
+      text(smallcaps[Sperrvermerk]),
+    )
+    sperrvermerkText
     v(1.618fr)
   }
 
   if genderhinweis == true {
-    v(1fr)
-    align(center)[
-        #heading(
-          outlined: false,
-          numbering: none,
-          text(0.85em, smallcaps[Gleichbehandlung der Geschlechter]),
-        )
-        #genderhinweisText
-      ]
-  
+    pagebreak()
+    heading(
+      outlined: false,
+      numbering: none,
+      text(smallcaps[Gleichbehandlung der Geschlechter]),
+    )
+    genderhinweisText
     v(1.618fr)
   }
 
   if vorwort == true {
+    pagebreak()
     v(1fr)
-    align(center)[
-        #heading(
-          outlined: false,
-          numbering: none,
-          text(0.85em, smallcaps[Vorwort / Danksagungen]),
-        )
-        #vorwortText
-      ]
-  
+    heading(
+      outlined: false,
+      numbering: none,
+      text(smallcaps[Vorwort / Danksagungen]),
+    )
+    vorwortText  
     v(1.618fr)
   }
 
   // Table of contents.
-  outline(depth: 3, indent: true)
+  pagebreak()
+  outline(
+    depth: 3,
+    indent: auto,
+    title: "Inhaltsverzeichnis"
+    )
   set page(numbering: "I")
   counter(page).update(1)
 
   let pagecounter = 0
 
   if(abbildungsverzeichnis == true){
+    pagebreak()
     pagecounter += 1
-    outline(title: "Abbildungsverzeichnis" ,target: figure.where(kind: image))
+    heading(
+      "Abbildungsverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
+    outline(
+      title: none,
+      target: figure.where(kind: image)
+    )
   }
   
   if(tabellenverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    outline(title: "Tabellenverzeichnis" ,target: figure.where(kind: table))
+    heading(
+      "Tabellenverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
+    outline(
+      title: none,
+      target: figure.where(kind: table)
+    )
   }
 
   if(codeverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    outline(title: "Codeverzeichnis" ,target: figure.where(kind: raw))
+    heading(
+        numbering: none,
+        outlined: true,
+        text("Codeverzeichnis")
+      )
+      linebreak()
+    outline(
+      title: none,
+      target: figure.where(kind: raw)
+    )
   }
 
   if(abkürzungsverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    print-acronyms(title: "Abkürzungsverzeichnis", 1em)
+    heading(
+        numbering: none,
+        outlined: true,
+        text("Abkürzungsverzeichnis")
+      )
+      linebreak()
+    print-acronyms(
+      1em
+    )
   }
 
   // Main body.
@@ -172,15 +213,47 @@
   
   set page(numbering: "I")
   counter(page).update(pagecounter  + 1)
+
+  if(anhang == true){
+    pagebreak()
+    heading(
+      level: 1,
+      numbering: none,
+      outlined: true,
+      "Anhang"
+    )
+    linebreak()
+    include "anhang.typ"
+  }
   
-  if(glossar == true){  
-    print-glossary(title: "Glossar", 1em)
+  if(glossar == true){
+    pagebreak()
+    heading(
+        numbering: none,
+        outlined: true,
+        text("Glossar")
+    )
+    linebreak()
+    print-glossary(
+      1em)
   }
 
   if(literaturverzeichnis == true){
-    bibliography(title: "Literaturverzeichnis", "literatur.bib")
+    pagebreak()
+    heading(
+        level: 1,
+        numbering: none,
+        outlined: true,
+        text("Literaturverzeichnis")
+      )
+    linebreak()
+    bibliography(
+      title: none,
+      style: "american-psychological-association",
+      "literatur.bib")
   }
-  
+
+  pagebreak()
   set page(numbering: none)
   align(left)[
     #heading(
@@ -188,15 +261,14 @@
       numbering: none,
       text("Eidesstattliche Erklärung")
     )
-  Hiermit erklären wir, dass diese Projektarbeit selbständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt und die aus fremden Quellen direkt oder indirekt übernommenen Gedanken als solche kenntlich gemacht haben. Die Arbeit oder Teile hieraus wurde und wird keiner anderen Stelle oder anderen Person im Rahmen einer Prüfung vorgelegt. Wir versichern zudem, dass keine sachliche Übereinstimmung mit einer im Rahmen eines vorangegangenen Studiums angefertigten Seminar-, Diplom- oder Abschlussarbeit sowie Bachelorthesis besteht.
+  Hiermit erklären ich, dass diese Bachelorarbeit selbständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt und die aus fremden Quellen direkt oder indirekt übernommenen Gedanken als solche kenntlich gemacht habe. Die Arbeit oder Teile hieraus wurde und wird keiner anderen Stelle oder anderen Person im Rahmen einer Prüfung vorgelegt. Ich versichern zudem, dass keine sachliche Übereinstimmung mit einer im Rahmen eines vorangegangenen Studiums angefertigten Seminar-, Diplom- oder Abschlussarbeit sowie Bachelorthesis besteht.
   ]
 
   grid(
       columns: (1fr),
-      ..authors.map(author => {
-        v(3.5em)
-        line(length: 100%)
-        "Datum, Unterschrift von " + author.name
-      })
+        v(3.5em),
+        line(length: 100%),
+        v(1em),
+        "Datum, Unterschrift von " + author
     )
 }

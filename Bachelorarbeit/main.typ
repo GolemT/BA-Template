@@ -8,6 +8,8 @@
 
   title: "",
   author: "",
+  keywords: ("PDF", "Bachelorarbeit"),
+  description: "",
   studiengruppe: "",
   matrikelnummer: "",
   kontaktdaten: (

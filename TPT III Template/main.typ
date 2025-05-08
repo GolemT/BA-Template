@@ -9,6 +9,8 @@
   title: "",
   author: "",
   matrikelnummer: "",
+  keywords: ("PDF", "Theorie-Praxis-Transfer"),
+  description: "",
   date: "28.03.2025",
   modul: [Theorie-Praxis-Anwendung III],
 )

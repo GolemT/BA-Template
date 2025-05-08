@@ -6,10 +6,21 @@
 #show: project.with(
   // Folgende Einstellungen einkommentieren und anpassen wenn benötigt.
 
-   title: "",
+  title: "",
+  author: "",
+  keywords: ("PDF", "Bachelorarbeit"),
+  description: "",
   studiengruppe: "",
+  matrikelnummer: "",
   akademischerGutachter: "",
   betrieblicherGutachter: "",
+  datumDesKolloquiums: "",
+  abgabe: "",
+  kontaktdaten: (
+    (""),
+    (""),
+    ("")
+  ),
   sperrvermerk: true,
   genderhinweis: true,
   abbildungsverzeichnis: true,

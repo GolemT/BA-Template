@@ -1,12 +1,9 @@
 #let is-in-dict(dict-type, state, element) = {
-  context {
-    let list = state.get()
-    if element not in list {
-      panic(element + " is not a key in the " + dict-type + " dictionary.")
-      return false
-    }
+  let list = state.get()
+  if element not in list {
+    panic(element + " is not a key in the " + dict-type + " dictionary.")
+    return false
   }
-
   return true
 }
 

@@ -7,6 +7,8 @@
   //Settings der Template
   title: "",
   author: "",
+  keywords: (),
+  description: "",
   studiengruppe: "",
   matrikelnummer: "",
   akademischerGutachter: "",
@@ -21,6 +23,7 @@
   tabellenverzeichnis: true,
   codeverzeichnis: true,
   abkürzungsverzeichnis: true,
+  anhang: false,
   glossar: true,
   literaturverzeichnis: true,
   //Vorgeschriebene Texte
@@ -29,29 +32,14 @@
   genderhinweisText: [Zur besseren Lesbarkeit wird in dieser Ausarbeitung auf die gleichzeitige Verwendung geschlechtsspezifischer Sprachformen verzichtet. Sämtliche personenbezogenen Bezeichnungen gelten daher im Sinne der Gleichbehandlung für alle Geschlechter. Diese Vereinfachung dient ausschließlich der sprachlichen Klarheit und ist in keiner Weise als Wertung zu verstehen.],
   body,
 ) = {
-
-  if (title == "") {
-    panic("Du muss einen Titel angeben")
-  }
-  if (author == "") {
-    panic("Du musst einen Author angeben")
-  }
-  if (studiengruppe == "") {
-    panic("Du musst eine Studiengruppe angeben")
-  }
-  if (matrikelnummer == "") {
-    panic("Du musst eine Matrikelnummer angeben")
-  }
-  if (akademischerGutachter == "") {
-    panic("Du musst einen akademischen Gutachter angeben")
-  }
-  if (betrieblicherGutachter == "") {
-    panic("Du musst einen betrieblichen Gutachter angeben")
-  }
-
   
   // Set the document's basic properties.
-  set document(author: author, title: title)
+    set document(
+    author: author, 
+    title: title, 
+    keywords: keywords, 
+    description: description,
+  )
   set text(size: 12pt)
   set page(
     header: [#align(
@@ -154,8 +142,8 @@
   )
   v(1.5fr)
 
-  if sperrvermerk == true {
-    v(1fr)
+   if sperrvermerk == true {
+    pagebreak()
     heading(
       outlined: false,
       numbering: none,
@@ -166,7 +154,7 @@
   }
 
   if genderhinweis == true {
-    v(1fr)
+    pagebreak()
     heading(
       outlined: false,
       numbering: none,
@@ -177,6 +165,7 @@
   }
 
   if vorwort == true {
+    pagebreak()
     v(1fr)
     heading(
       outlined: false,
@@ -188,13 +177,11 @@
   }
 
   // Table of contents.
+  pagebreak()
   outline(
-    depth: 3, 
-    indent: true,
-    title: 
-      text(
-        "Inhaltsverzeichnis"
-      ),
+    depth: 3,
+    indent: auto,
+    title: "Inhaltsverzeichnis"
     )
   set page(numbering: "I")
   counter(page).update(1)
@@ -202,50 +189,62 @@
   let pagecounter = 0
 
   if(abbildungsverzeichnis == true){
+    pagebreak()
     pagecounter += 1
+    heading(
+      "Abbildungsverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
     outline(
-      title: heading(
-        numbering: none,
-        outlined: true,
-        text("Abbildungsverzeichnis"),
-        level: 1
-      ),
+      title: none,
       target: figure.where(kind: image)
     )
   }
   
   if(tabellenverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
+    heading(
+      "Tabellenverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
     outline(
-      title: heading(
-        numbering: none,
-        outlined: true,
-        text("Tabellenverzeichnis")
-      ),
+      title: none,
       target: figure.where(kind: table)
     )
   }
 
   if(codeverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    outline(
-      title: heading(
+    heading(
         numbering: none,
         outlined: true,
         text("Codeverzeichnis")
-      ),
+      )
+      linebreak()
+    outline(
+      title: none,
       target: figure.where(kind: raw)
     )
   }
 
   if(abkürzungsverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    print-acronyms(
-      title: heading(
+    heading(
         numbering: none,
         outlined: true,
         text("Abkürzungsverzeichnis")
-      ),
+      )
+      linebreak()
+    print-acronyms(
       1em
     )
   }
@@ -259,14 +258,28 @@
   
   set page(numbering: "I")
   counter(page).update(pagecounter  + 1)
+
+  if(anhang == true){
+    pagebreak()
+    heading(
+      level: 1,
+      numbering: none,
+      outlined: true,
+      "Anhang"
+    )
+    linebreak()
+    include "anhang.typ"
+  }
   
-  if(glossar == true){  
-    print-glossary(
-      title: heading(
+  if(glossar == true){
+    pagebreak()
+    heading(
         numbering: none,
         outlined: true,
         text("Glossar")
-      ),
+    )
+    linebreak()
+    print-glossary(
       1em)
   }
 
@@ -281,9 +294,11 @@
     linebreak()
     bibliography(
       title: none,
+      style: "american-psychological-association",
       "literatur.bib")
   }
-  
+
+  pagebreak()
   set page(numbering: none)
   align(left)[
     #heading(

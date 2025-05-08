@@ -6,14 +6,12 @@
 #show: project.with(
   // Folgende Einstellungen einkommentieren und anpassen wenn benötigt.
 
-  // title: "",
+  title: "Title der Arbeit",
   authors: (
-    (name: "Tim Kosleck", Matrikelnummer: "222033"), 
-    (name: "Alina Kreimer", Matrikelnummer: "222097"),
-    (name: "Juliette-Louisa Möhr", Matrikelnummer: "222024"),
-    (name: "Max Schiefer", Matrikelnummer: "222020"),
-    (name: "Jasper-Finn Schröder", Matrikelnummer: "222049")
+    (name: "Max Mustermann", Matrikelnummer: "123456"), 
   ),
+  keywords: ("PDF", "Ausarbeitung"),
+  description: "",
   // date: "01.01.2024",
   // logo: image("images/BA_Logo.jpg", width: auto),
   // modul: [Theorie-Praxis-Anwendung II],
@@ -24,6 +22,7 @@
   // tabellenverzeichnis: true,
   // codeverzeichnis: true
   // abkürzungsverzeichnis: true,
+  // ahang: false,
   // glossar: true,
   // literaturverzeichnis: true,
   

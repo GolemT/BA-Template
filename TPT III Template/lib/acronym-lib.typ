@@ -97,8 +97,7 @@
   acr(acronym, plural: true, link: link)
 }
 
-#let print-acronyms(title: "acronyms", acronym-spacing) = {
-  heading(level: 1, outlined: false, numbering: none)[#title]
+#let print-acronyms(acronym-spacing) = {
 
   context {
     let acronyms = acros.get()

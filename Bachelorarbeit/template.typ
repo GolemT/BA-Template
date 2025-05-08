@@ -7,6 +7,8 @@
   //Settings der Template
   title: "",
   author: "",
+  keywords: (),
+  description: "",
   studiengruppe: "",
   matrikelnummer: "",
   kontaktdaten: (
@@ -25,47 +27,24 @@
   tabellenverzeichnis: true,
   codeverzeichnis: true,
   abkürzungsverzeichnis: true,
+  anhang: false,
   glossar: true,
   literaturverzeichnis: true,
   //Vorgeschriebene Texte
-  sperrvermerkText: [Die vorliegende Seminararbeit beinhaltet interne vertrauliche Informationen der DB Systel GmbH. Die Weitergabe des Inhaltes dieser Arbeit und eventuell beiliegender Zeichnungen und Daten im Gesamten oder in Teilen ist grundsätzlich untersagt. Es dürfen keinerlei Kopien oder Abschriften, auch nicht in digitaler Form, gefertigt werden. Ausnahmen bedürfen der schriftlichen Genehmigung durch die DB Systel GmbH.],
+  sperrvermerkText: [Die nachfolgende Bachelorarbeit enthält vertrauliche Daten der DB Systel GmbH. Veröffentlichungen oder Vervielfältigungen der Bachelorarbeit - auch nur auszugsweise - sind ohne ausdrückliche Genehmigung der DB Systel GmbH nicht gestattet. Die Bachelorarbeit ist nur den Korrektoren sowie den Mitgliedern des Prüfungsausschusses zugänglich zu machen. ],
   vorwortText: [],
   genderhinweisText: [Zur besseren Lesbarkeit wird in dieser Ausarbeitung auf die gleichzeitige Verwendung geschlechtsspezifischer Sprachformen verzichtet. Sämtliche personenbezogenen Bezeichnungen gelten daher im Sinne der Gleichbehandlung für alle Geschlechter. Diese Vereinfachung dient ausschließlich der sprachlichen Klarheit und ist in keiner Weise als Wertung zu verstehen.],
   body,
-) = {
-
-  if (title == "") {
-    panic("Du muss einen Titel angeben")
-  }
-  if (author == "") {
-    panic("Du musst einen Author angeben")
-  }
-  if (studiengruppe == "") {
-    panic("Du musst eine Studiengruppe angeben")
-  }
-  if (matrikelnummer == "") {
-    panic("Du musst eine Matrikelnummer angeben")
-  }
-  if (kontaktdaten.at(0) == "") {
-    panic("Du musst eine Straße und Hausnummer angeben")
-  }
-  if (kontaktdaten.at(1) == "") {
-    panic("Du musst eine PLZ und Ort angeben")
-  }
-    if (kontaktdaten.at(2) == "") {
-    panic("Du musst eine Email Adresse angeben")
-  }
-  if (akademischerGutachter == "") {
-    panic("Du musst einen akademischen Gutachter angeben")
-  }
-  if (betrieblicherGutachter == "") {
-    panic("Du musst einen betrieblichen Gutachter angeben")
-  }
-
-  
+) = {  
   // Set the document's basic properties.
-  set document(author: author, title: title)
+  set document(
+    author: author, 
+    title: title, 
+    keywords: keywords, 
+    description: description,
+  )
   set text(size: 12pt)
+  set par(leading: 1.5em)
   set page(
     header: [#align(
       center,
@@ -85,15 +64,20 @@
     numbering: none,
     number-align: end,
   )
-  set cite(style: "chicago-author-date")
-  set par(justify:true)
+  set cite(style: "american-psychological-association", form: "normal")
+  set par(justify:true, linebreaks: "optimized")
   set text(
     font: "Libre Baskerville", 
     lang: "de",
     hyphenate: false
   )
+  set figure(
+    gap: 2em
+  )
   show footnote.entry: set text(size: 10pt)
+  show footnote.entry: set footnote.entry(gap: 1em)
   show figure.caption: set text(size: 10pt)
+  show figure.caption: set par(leading: 1em)
   show math.equation: set text(weight: 400)
   show heading: set text(size: 12pt, weight: "bold")
   show heading.where(level: 1): set text(size: 14pt, weight: "bold")
@@ -101,14 +85,14 @@
     if it.outlined == true and it.numbering == none {
       it
     } else {
-      pagebreak(weak: true) + it + linebreak() 
+      it + linebreak() 
     }
   }
 
-  show heading.where(level: 2) 
+  show heading.where(level: 2)
   .or(heading.where(level: 3)) 
   .or(heading.where(level:4)): it => {
-    it + linebreak()
+    linebreak() + it + linebreak()
   }
 
   set heading(bookmarked: true)
@@ -116,6 +100,7 @@
   show figure: it => {
     linebreak() + it + linebreak()
   }
+
   
   init-acronyms(Acronyms)
   init-glossary(Glossar)
@@ -127,7 +112,7 @@
   align(center, par(text(12pt, weight: 700, title, hyphenate: false), justify: false))
   v(2fr, weak: true)
   if logo != none {
-    align(center, image("images/DB_Logo.png", width: 40%))
+    align(center, image("images/DB_Logo.png", width: 40%, alt: "Logo der DB Systel GmbH"))
   }
   v(2fr)
 
@@ -169,10 +154,9 @@
       [Abgabedatum:], [#abgabe]
     )
   )
-  v(1.5fr)
 
   if sperrvermerk == true {
-    v(1fr)
+    pagebreak()
     heading(
       outlined: false,
       numbering: none,
@@ -183,7 +167,7 @@
   }
 
   if genderhinweis == true {
-    v(1fr)
+    pagebreak()
     heading(
       outlined: false,
       numbering: none,
@@ -194,6 +178,7 @@
   }
 
   if vorwort == true {
+    pagebreak()
     v(1fr)
     heading(
       outlined: false,
@@ -205,13 +190,11 @@
   }
 
   // Table of contents.
+  pagebreak()
   outline(
-    depth: 3, 
-    indent: true,
-    title: 
-      text(
-        "Inhaltsverzeichnis"
-      ),
+    depth: 3,
+    indent: auto,
+    title: "Inhaltsverzeichnis"
     )
   set page(numbering: "I")
   counter(page).update(1)
@@ -219,50 +202,62 @@
   let pagecounter = 0
 
   if(abbildungsverzeichnis == true){
+    pagebreak()
     pagecounter += 1
+    heading(
+      "Abbildungsverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
     outline(
-      title: heading(
-        numbering: none,
-        outlined: true,
-        text("Abbildungsverzeichnis"),
-        level: 1
-      ),
+      title: none,
       target: figure.where(kind: image)
     )
   }
   
   if(tabellenverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
+    heading(
+      "Tabellenverzeichnis", 
+      numbering: none,
+      outlined: true, 
+      level: 1
+    )
+    linebreak()
     outline(
-      title: heading(
-        numbering: none,
-        outlined: true,
-        text("Tabellenverzeichnis")
-      ),
+      title: none,
       target: figure.where(kind: table)
     )
   }
 
   if(codeverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    outline(
-      title: heading(
+    heading(
         numbering: none,
         outlined: true,
         text("Codeverzeichnis")
-      ),
+      )
+      linebreak()
+    outline(
+      title: none,
       target: figure.where(kind: raw)
     )
   }
 
   if(abkürzungsverzeichnis == true) {
+    pagebreak()
     pagecounter += 1
-    print-acronyms(
-      title: heading(
+    heading(
         numbering: none,
         outlined: true,
         text("Abkürzungsverzeichnis")
-      ),
+      )
+      linebreak()
+    print-acronyms(
       1em
     )
   }
@@ -276,14 +271,28 @@
   
   set page(numbering: "I")
   counter(page).update(pagecounter  + 1)
+
+  if(anhang == true){
+    pagebreak()
+    heading(
+      level: 1,
+      numbering: none,
+      outlined: true,
+      "Anhang"
+    )
+    linebreak()
+    include "anhang.typ"
+  }
   
-  if(glossar == true){  
-    print-glossary(
-      title: heading(
+  if(glossar == true){
+    pagebreak()
+    heading(
         numbering: none,
         outlined: true,
         text("Glossar")
-      ),
+    )
+    linebreak()
+    print-glossary(
       1em)
   }
 
@@ -298,9 +307,11 @@
     linebreak()
     bibliography(
       title: none,
+      style: "american-psychological-association",
       "literatur.bib")
   }
-  
+
+  pagebreak()
   set page(numbering: none)
   align(left)[
     #heading(
