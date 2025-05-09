@@ -59,6 +59,7 @@
 
 #figure(
   caption: "Beispiel für Code",
+  sourcecode(
   ```ts
     const ReactComponent = () => {
       return (
@@ -70,6 +71,7 @@
 
     export default ReactComponent;
   ```
+  )
 )<code>
 
 === Contributions
