@@ -2,7 +2,6 @@
 #import "glossar.typ": Glossar
 #import "acronyms.typ": Acronyms
 #import "lib/shared-lib.typ": *
-#import "@preview/codelst:2.0.2": sourcecode
 
 #let project(
   //Settings der Template

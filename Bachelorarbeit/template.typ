@@ -2,7 +2,6 @@
 #import "glossar.typ": Glossar
 #import "acronyms.typ": Acronyms
 #import "lib/shared-lib.typ": *
-#import "@preview/codelst:2.0.2": sourcecode
 
 #let project(
   //Settings der Template
@@ -146,9 +145,9 @@
       [Kontaktdaten: ], [#kontaktdaten.at(0)],
       [], [#kontaktdaten.at(1)],
       [], [#kontaktdaten.at(2)],
-      [Anzahl der Wörter:], [#word-count-of(body, exclude: (heading, figure.caption)).words],
+      [Anzahl der Wörter:], [#word-count-of(body, exclude: (heading, figure)).words],
       [(inkl. wörtliche Zitate / Fußnoten)], [],
-      [Anzahl der Wörter:], [#word-count-of(body, exclude: (heading, figure.caption, cite, footnote)).words],
+      [Anzahl der Wörter:], [#word-count-of(body, exclude: (heading, figure, quote, cite, footnote)).words],
       [(exkl. wörtliche Zitate / Fußnoten)], [],
       [Akademischer Gutachter:], [#akademischerGutachter],
       [Betrieblicher Gutachter:],[#betrieblicherGutachter],

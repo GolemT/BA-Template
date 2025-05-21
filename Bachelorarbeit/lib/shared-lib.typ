@@ -21,25 +21,6 @@
   }
 }
 
-#let todo(message) = {
-  set text(white)
-  rect(
-    fill: red,
-    radius: 4pt,
-    [*TODO:* #message]
-  )
-  set text(black)
-}
-
-#let comment(message) = {
-  set text(white)
-  rect(
-    fill: blue,
-    radius: 4pt,
-    [Kommentar: #message]
-  )
-}
-
 #let dictionary-sum(a, b) = {
   let c = (:)
   for k in a.keys() + b.keys() {
@@ -138,9 +119,7 @@
   "parbreak",
   "path",
   "polygon",
-  "ref",
   "repeat",
-  "smartquote",
   "space",
   "style",
   "update",
@@ -191,6 +170,7 @@
 ///  To exclude figures, but include figure captions, pass the name
 ///  `"figure-body"` (which is not a real element). To include figure bodies,
 ///  but exclude their captions, pass the name `"caption"`.
+// 
 #let map-tree(f, content, exclude: IGNORED_ELEMENTS) = {
   if content == none { return none }
   let exclude = interpret-exclude-patterns(exclude)
@@ -199,11 +179,10 @@
   let fn = repr(content.func())
   let fields = content.fields().keys()
 
+  // Handle excluded selector patterns
   let exclude-selectors = exclude.filter(e => type(e) == dictionary and "element-fn" in e)
   for (element-fn, fields) in exclude-selectors {
-    // panic(exclude-selectors, content)
     if fn == element-fn {
-      // If all fields in the selector match the element, exclude it
       if not fields.pairs().any(((key, value)) => content.at(key, default: value) != value) {
         return none
       }
@@ -212,44 +191,110 @@
 
   if fn in exclude {
     none
-
-  // check if element has a label that is excluded
   } else if content.at("label", default: none) in exclude {
     none
-
   } else if fn in ("text", "raw") {
     f(content.text)
-
   } else if "children" in fields {
     let children = content.children
 
     if fn == "sequence" {
-      // don't do this for, e.g., grid or stack elements
       children = concat-adjacent-text(children)
     }
 
     children
       .map(map-subtree)
       .filter(x => x != none)
-
   } else if fn == "figure" {
     (
       if "figure-body" not in exclude { map-subtree(content.body) },
       if "caption" in content.fields() { map-subtree(content.caption) },
     )
       .filter(x => x != none)
-
   } else if fn == "styled" {
     map-subtree(content.child)
+  } else if fn == "cite" {
+    // Special handling for cite function
+    // Since a citation is typically one "word" in the context of academic writing
+    // We'll count it as one word
+    f("w ")  // Count as one word by returning a space
+  } else if fn == "ref" {
+    // Similar handling for reference function
+    f("w")  // Count as one word
+  } else if fn == "context" {
+    // For context function, also count as one word
+    f("w")  // Count as one word
+  } else if fn in ("acr", "acrl", "acrs", "acrf", "acrpl", "acrlpl", "acrspl", "acrfpl") {
+    // Custom handling for acronym functions
+    // Get the acronym text from the first parameter
+    let acr_text = ""
+    if "acr" in fields {
+      acr_text = content.acr
+    } else if "acronym" in fields {
+      acr_text = content.acronym
+    } else if "element" in fields {
+      acr_text = content.element
+    }
+    
+    // Check the plural flag
+    let is_plural = content.at("plural", default: false)
+    
+    // Get the full text based on the function type and context
+    if fn == "acrf" or fn == "acrfpl" {
+      // These display full form (acronym + full text)
+      // We need to access the acronym dictionary
+      let full_text = ""
+        // Try to simulate what the function would output for word counting
+        // This is approximate since we can't fully reproduce the function's behavior
+      if is_plural {
+        full_text = acr_text + "s (full form plural)"
+      } else {
+        full_text = acr_text + " (full form)"
+      }
 
+      if (full_text = "") {
+        full_text = acr_text
+      }
+      f(full_text)
+    } else {
+      // For other acronym functions, count just the acronym
+      if is_plural {
+        f(acr_text + "s")
+      } else {
+        f(acr_text)
+      }
+    }
+  } else if fn == "gls" {
+    // Handle glossary entries
+    let element_text = ""
+    if "element" in fields {
+      element_text = content.element
+    }
+    f(element_text)
   } else if "body" in fields {
     map-subtree(content.body)
-
+  } else if "text" in fields {
+    // Try to extract text from fields that might contain it
+    f(content.text)
   } else {
-    none
-
+    // For any other custom function that might contain text
+    // Try to process it by examining its fields
+    let result = none
+    for key in fields {
+      let value = content.at(key)
+      if type(value) == str {
+        if result == none { result = f(value) }
+        else { result += f(value) }
+      } else if type(value) == content {
+        let subtree_result = map-subtree(value)
+        if subtree_result != none {
+          if result == none { result = subtree_result }
+          else { result += subtree_result }
+        }
+      }
+    }
+    result
   }
-
 }
 
 /// Extract plain text from content
